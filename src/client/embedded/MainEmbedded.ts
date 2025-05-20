@@ -169,9 +169,13 @@ export class MainEmbedded implements MainBase {
         this.semicolonAngel = new SemicolonAngel(this);
 
         if (this.config.enableFileAccess) {
+            console.log("File access enabled.");
             //@ts-ignore
             window.sql_ide_access = new OnlineIDEAccessImpl();
             OnlineIDEAccessImpl.registerIDE(this);
+        }
+        else {
+            console.log("File access disabled.");
         }
 
 

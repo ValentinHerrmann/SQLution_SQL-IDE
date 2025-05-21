@@ -62,7 +62,7 @@ export class Lexer {
 
     lex(input: string): { tokens: TokenList, errors: Error[], bracketError: string } {
 
-        this.input = input.replace("\u00a0", " ");
+        this.input = input.replace("\u00a0", " ").replace("&#x27","'");
         this.input = this.input.replace(/{[^}]+}(\[[^\]]+\])?/g, "0");
         console.log("Lexer input: " + this.input);
         

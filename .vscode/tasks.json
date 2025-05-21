@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "build-embedded",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build-embedded",
+			"detail": "tsc && vite build --config vite.config-embedded.js"
+		},
+		{
+			"label": "Build Embedded and push to dist-Repo",
+			"type": "shell",
+			"command": "cd ${workspaceFolder}/dist ; git add . ; git commit -m 'update dist' ; git push ; cd ${workspaceFolder} ; git add dist ; git commit -m 'update dist' ; git push",
+			"dependsOn": [
+				"npm: build-embedded"
+			],
+			"problemMatcher": []
+		}
+	]
+}

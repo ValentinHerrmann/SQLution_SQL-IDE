@@ -97,7 +97,9 @@ export class Module {
 
         if (uriCounter > 0) path += " (" + uriCounter + ")";
         this.uri = monaco.Uri.from({ path: path, scheme: 'inmemory' });
-        this.model = monaco.editor.createModel(file.text, "vscSQL", this.uri);
+        
+        let text = file.text.replaceAll("&#x27;","'").replaceAll("&quot;", '"').replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll(/&amp;/g, "&");
+        this.model = monaco.editor.createModel(text, "vscSQL", this.uri);
         this.model.updateOptions({ tabSize: 3 });
 
         this.lastSavedVersionId = this.model.getAlternativeVersionId();

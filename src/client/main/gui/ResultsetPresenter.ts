@@ -116,6 +116,61 @@ export class ResultsetPresenter {
 
         if (statements.length == 0) return;
 
+        console.log(statements);
+
+
+        for(let s of statements){
+            let sql = s.sql;
+            // Extract inputs in the form {name} (not followed by [)
+            let inputs: string[] = [];
+            let inputRegex = /(\{[^}]+\})[^\[]/g; // simple input variables
+            let match;
+            while ((match = inputRegex.exec(sql)) !== null) {
+                if (!inputs.includes(match[1])) {
+                    inputs.push(match[1]);
+                }
+            }
+            console.log("inputs1", inputs);
+            inputRegex = /(\{[^}]+\}\[[^\]]+\])/g; // dropdown inputs
+            while ((match = inputRegex.exec(sql)) !== null) {
+                if (!inputs.includes(match[1])) {
+                    inputs.push(match[1]);
+                }
+            }
+            console.log("inputs2", inputs);
+
+            for (let input of inputs) {
+                let value = null;
+                let count = 0;
+                while (value == null && count < 2) {
+                    value = prompt("Gib einen Wert für '" + input + "' ein:");
+                    count++;
+                }
+                if (value == null) {
+                    return;
+                }
+                sql = sql.replace(input, value);
+            }
+            s.sql = sql;
+        }
+
+        
+
+        /*
+        dropdownSQLs = re.findall(r'({[^}]+}\[[^\]]+\])', sql)
+        dropdowns = []
+        for drop in dropdownSQLs:
+            name = re.findall(r'{(.*?)}', drop)[0]
+            dSql = re.findall(r'\[(.*?)\]', drop)[0]
+            cur = runSql(dSql, request.user.username)
+            vals = cur.fetchall()
+            v = [str(row).replace("(", "").replace(")", "") for row in vals]
+            dropdowns.append({
+                'name': name,
+                'options': v
+            })*/
+
+
         let hasDDLStatements: boolean = statements.some(st => this.isDDLStatement(st));
         let hasWriteStatements: boolean = statements.some(st => this.isWriteStatement(st));
         let workspace = this.main.getCurrentWorkspace();
@@ -542,6 +597,7 @@ export class ResultsetPresenter {
 
     fetchSelectedStatements(): SQLStatement[] {
         let module = this.main.getCurrentlyEditedModule();
+        
         if (module == null) return null;
 
         let monacoEditor = this.main.getMonacoEditor();
@@ -550,6 +606,31 @@ export class ResultsetPresenter {
 
         let statements: SQLStatement[] = module.getSQLSTatementsAtSelection(monacoEditor.getSelection());
         for (let statement of statements) {
+            let statementV1 =  monacoEditor.getModel().getValueInRange({
+                startColumn: statement.from.column,
+                startLineNumber: statement.from.line, endColumn: statement.to.column, endLineNumber: statement.to.line
+            });
+
+            if (statementV1.includes('{')) {
+                const model = monacoEditor.getModel();
+                const startOffset = model.getOffsetAt({
+                    lineNumber: statement.from.line,
+                    column: statement.from.column
+                });
+                const fullText = model.getValue();
+                const searchStart = startOffset;
+                let semicolonIndex = fullText.indexOf(';', searchStart);
+                if(semicolonIndex == -1) {
+                    console.log('no semicolon found');
+                    semicolonIndex = fullText.length;
+                }
+                if (semicolonIndex !== -1) {
+                    const semicolonPos = model.getPositionAt(semicolonIndex + 1);
+                    statement.to.line = semicolonPos.lineNumber;
+                    statement.to.column = semicolonPos.column;
+                }
+            }
+
             statement.sql = monacoEditor.getModel().getValueInRange({
                 startColumn: statement.from.column,
                 startLineNumber: statement.from.line, endColumn: statement.to.column, endLineNumber: statement.to.line

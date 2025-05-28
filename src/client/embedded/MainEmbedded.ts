@@ -564,7 +564,7 @@ export class MainEmbedded implements MainBase {
 
         $buttonSave.on('click', () => { that.saveDatabaseToFile() });
 
-        //$controlsDiv.append($buttonOpen, $buttonSave);
+        $controlsDiv.append($buttonOpen, $buttonSave);
 
         this.resultsetPresenter = new ResultsetPresenter(this, $bottomDivInner);
         this.resultsetPresenter.addWriteQueryListener(this.writeQueryManager);

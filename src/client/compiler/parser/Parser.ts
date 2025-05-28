@@ -81,6 +81,7 @@ export class Parser {
         this.endToken.position = { line: lastToken.position.line, column: lastToken.position.column + lastToken.position.length, length: 1 };
 
         this.module.sqlStatements = this.parseMain();
+        console.log("L84: ", this.module.sqlStatements);
 
         this.module.errors[1] = this.errorList;
 
@@ -393,6 +394,7 @@ export class Parser {
                     resultTypes: []
                 });
             }
+            console.log("L397: ", mainProgram);
             // console.log(mainProgram[mainProgram.length - 1]);
 
             mainProgramEnd = this.getCurrentPosition();
@@ -425,6 +427,8 @@ export class Parser {
         this.module.addCompletionHint(afterLastStatement, { line: this.endToken.position.line + 1, column: 0, length: 0 }, false, false,
             this.beginStatementKeywords);
 
+
+        console.log("L430: ", mainProgram);
         return mainProgram;
 
     }

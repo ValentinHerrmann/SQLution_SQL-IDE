@@ -139,7 +139,10 @@ export class ResultsetPresenter {
             }
             console.log("inputs2", inputs);
 
+            console.log("Dummy Log");
+
             for (let input of inputs) {
+                console.log("Found input", input);
                 let value = null;
                 let count = 0;
                 while (value == null && count < 2) {
@@ -149,9 +152,12 @@ export class ResultsetPresenter {
                 if (value == null) {
                     return;
                 }
+                console.log("Replacing input", input, "with value", value);
                 sql = sql.replace(input, value);
+                console.log("New SQL:", sql);
             }
             s.sql = sql;
+                console.log("New SQL:", sql);
         }
 
         
@@ -195,6 +201,7 @@ export class ResultsetPresenter {
             }
 
         } else {
+            console.log("L204");
             this.executeStatements(statements, 0, [], () => { });
         }
 
@@ -202,6 +209,10 @@ export class ResultsetPresenter {
 
     executeDDLWriteStatementsEmbedded(workspace: Workspace, statements: SQLStatement[], database: WDatabase) {
         let sucessfullyExecutedModifyingStatements: SQLStatement[] = [];
+        
+        console.log("L213");
+        console.log(statements);
+
         this.executeStatements(statements, 0, sucessfullyExecutedModifyingStatements, () => {
 
             if (sucessfullyExecutedModifyingStatements.length == 0)
@@ -222,6 +233,7 @@ export class ResultsetPresenter {
                 () => {
                     // Step 2: Execute new statements to see which are successful
                     let sucessfullyExecutedModifyingStatements: SQLStatement[] = [];
+                    console.log("L234");
                     this.executeStatements(statements, 0, sucessfullyExecutedModifyingStatements, () => {
 
                         if (sucessfullyExecutedModifyingStatements.length == 0)
@@ -293,6 +305,7 @@ export class ResultsetPresenter {
 
 
         let callback1 = () => {
+            console.log("L306");
             this.executeStatements(statements, index + 1, successfullyExecutedModifyingStatements, callback, errors);
         }
 
@@ -320,6 +333,9 @@ export class ResultsetPresenter {
                     (error) => { errors.push({ statement: statement, message: error }); callback1(); });
             }
         } else {
+            console.log("L339");
+            console.log(statement.sql);
+            console.log(statement);
             let sql = new StatementCleaner().clean(statement);
             console.log(sql);
             this.main.getDatabaseTool().executeQuery(sql, (results) => { successfullyExecutedModifyingStatements.push(statement); callback1(); }, (error) => { errors.push({ statement: statement, message: error }); callback1(); });
@@ -639,6 +655,7 @@ export class ResultsetPresenter {
 
         // let sqlStatement = module.getSQLStatementAtPosition(monacoEditor.getPosition());
 
+        console.log("Fetched statements: ", statements);
         return statements;
 
     }

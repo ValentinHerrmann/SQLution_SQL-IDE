@@ -7,16 +7,19 @@ export class StatementCleaner {
     MaxRowsPerInsert: number = 300;
 
     clean(statement: SQLStatement): string {
+        console.log("Cleaning statement: ", statement.ast);
         switch (statement.ast.type) {
             case TokenType.keywordCreate:   // Create Table statement
                 statement.sqlCleaned = this.cleanCreateTableStatement(statement.ast);
-                return statement.sqlCleaned;
+                return statement.sql;
+                //return statement.sqlCleaned; DANGER: cleaned statements do not work with DataSpark variables!
             case TokenType.keywordInsert:
                 if(statement.ast.select != null){
                     return statement.sql;
                 } else {
                     statement.sqlCleaned = this.cleanInsertStatement(statement.ast);
-                    return statement.sqlCleaned;
+                    return statement.sql;
+                    //return statement.sqlCleaned;  DANGER: cleaned statements do not work with DataSpark variables!
                 }
             default:
                 return statement.sql;

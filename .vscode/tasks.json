@@ -10,11 +10,19 @@
 			"detail": "tsc && vite build --config vite.config-embedded.js"
 		},
 		{
+			"type": "npm",
+			"script": "build",
+			"group": "build",
+			"problemMatcher": [],
+			"label": "npm: build",
+			"detail": "tsc && vite build --config vite.config.js"
+		},
+		{
 			"label": "Build Embedded and push to dist-Repo",
 			"type": "shell",
 			"command": "cd ${workspaceFolder}/dist ; git add . ; git commit -m 'update dist' ; git push ; cd ${workspaceFolder} ; git add dist ; git commit -m 'update dist' ; git push",
 			"dependsOn": [
-				"npm: build-embedded"
+				"npm: build"
 			],
 			"problemMatcher": []
 		}

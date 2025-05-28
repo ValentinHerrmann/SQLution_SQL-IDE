@@ -469,13 +469,13 @@ export class MainEmbedded implements MainBase {
         this.$databaseResetButton = jQuery('<div class="joe_databaseResetButton jo_button jo_active" title="Datenbank auf Ausgangszustand zurücksetzen">Datenbank Reset</div>');
 
         $editorDiv.append(this.$monacoDiv, this.$hintDiv, this.$databaseResetButton);
-        //this.$monacoDiv.append(this.$codeResetButton);
+        this.$monacoDiv.append(this.$codeResetButton);
 
         // $topDiv.append($editorDiv);
 
-        //this.$codeResetButton.hide();
+        this.$codeResetButton.hide();
 
-        //this.$codeResetButton.on("click", () => { $codeResetModalWindow.show(); })
+        this.$codeResetButton.on("click", () => { $codeResetModalWindow.show(); })
 
         this.$databaseResetButton.hide();
 
@@ -663,7 +663,7 @@ export class MainEmbedded implements MainBase {
             this.deleteScriptsInDB();
 
             $window.hide();
-            //this.$codeResetButton.hide();
+            this.$codeResetButton.hide();
             this.compileRunsAfterCodeReset = 1;
 
         });

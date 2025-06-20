@@ -64,7 +64,7 @@ export class Lexer {
 
         this.input = input.replace("\u00a0", " ");
         this.input = this.input.replace(/{[^}]+}(\[[^\]]+\])?/g, "0");
-        console.log("Lexer input: " + this.input);
+        //console.log("Lexer input: " + this.input);
         
         this.tokenList = [];
         this.errorList = [];

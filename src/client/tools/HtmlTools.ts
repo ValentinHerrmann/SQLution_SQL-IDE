@@ -269,6 +269,7 @@ export function downloadFile(obj: any, filename: string, isBlob: boolean = false
             a = document.createElement('a');
         a.download = filename;
         a.href = window.URL.createObjectURL(blob);
+        console.log(a.href);
         a.dataset.downloadurl = ['text/plain', a.download, a.href].join(':');
         //@ts-ignore
         e.initEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -277,6 +278,10 @@ export function downloadFile(obj: any, filename: string, isBlob: boolean = false
     }
 }
 
+export function createFileUrl(obj: any, isBlob: boolean = false): string {
+    const blob = isBlob ? obj : new Blob([typeof obj === 'string' ? obj : JSON.stringify(obj)], { type: 'text/plain' });
+    return window.URL.createObjectURL(blob);
+}
 
 function fallbackCopyTextToClipboard(text) {
     var textArea = document.createElement("textarea");

@@ -25,3 +25,5 @@ dist-ssr
 /upload.cmd
 /upload_csg.cmd
 /package-lock.json
+
+dist/

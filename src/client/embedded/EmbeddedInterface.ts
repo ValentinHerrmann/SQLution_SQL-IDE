@@ -31,15 +31,30 @@ export class IDEFileAccessImpl implements IDEFileAccess {
 }
 
 export class SingleIDEAccessImpl implements SingleIDEAccess {
-
+    
     constructor(private ide: MainEmbedded){
-
+        this.ide = ide;
     }
 
     getFiles(): IDEFileAccess[] {
         return this.ide.getCurrentWorkspace().moduleStore.getModules(false).map(file => new IDEFileAccessImpl(file));        
     }
 
+    getDatabase() {
+    const dbTool = this.ide.getDatabaseTool();
+
+    return new Promise((resolve, reject) => {
+        dbTool.export(
+            (db) => {
+                const blob = new Blob([db.buffer], { type: 'application/octet-stream' });
+                resolve(blob);
+            },
+            (error) => {
+                reject("Export failed: " + error);
+            }
+        );
+    });
+}
 
 }
 

@@ -1,5 +1,6 @@
 import { MainBase } from "../main/MainBase.js";
 import { WorkerSim } from "../sqljs-worker/sqljsWorkerSim.js";
+import { LoadableDatabase } from "./DatabaseLoader.js";
 
 
 export type DatabaseDumpType = "binaryUncompressed" | "binaryCompressed" | "other";
@@ -63,6 +64,8 @@ export class DatabaseTool {
     queryErrorCallbackMap: Map<number, QueryErrorCallback> = new Map();
 
     databaseStructure: DatabaseStructure;
+    
+    private isReloading: boolean = false; // Flag to prevent infinite reload loops
 
     constructor(private main: MainBase){
 
@@ -195,6 +198,57 @@ export class DatabaseTool {
 
     executeQuery(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
 
+        // Automatisches Reload der Datenbank vor jeder Abfrage bei embedded Instanzen
+        // Aber nur wenn nicht bereits ein Reload läuft und es keine interne Struktur-Abfrage ist
+        if (this.main.isEmbedded() && !this.isReloading) {
+            const mainEmbedded = this.main as any; // Type assertion für MainEmbedded
+            
+            // Prüfe ob eine databaseURL konfiguriert ist und es keine Systemabfrage ist
+            if (mainEmbedded.config?.databaseURL != null && mainEmbedded.fetcher != null && !this.isSystemQuery(query)) {
+                console.log("Auto-reloading database before executing query:", query);
+                
+                this.isReloading = true; // Verhindere weitere Reloads
+                
+                // Lade Datenbank neu und führe dann die Abfrage aus
+                mainEmbedded.fetcher.load(mainEmbedded.config.databaseURL).then((loadableDb: any) => {
+                    mainEmbedded.initialTemplateDump = loadableDb.binDump;
+                    
+                    // Initialisiere Worker mit neuer Datenbank
+                    this.initializeWorker(loadableDb.binDump, loadableDb.statements || [], () => {
+                        this.isReloading = false; // Reload abgeschlossen
+                        // Nach erfolgreichem Reload, führe die ursprüngliche Abfrage aus
+                        this.executeQueryInternal(query, successCallback, errorCallback);
+                    }, () => {
+                        // Structure retrieval completed
+                    });
+                }).catch((error: string) => {
+                    this.isReloading = false; // Reload failed, reset flag
+                    console.error('Fehler beim automatischen Reload der Datenbank:', error);
+                    errorCallback('Database reload failed: ' + error);
+                });
+                return;
+            }
+        }
+
+        // Standard-Verhalten: Führe Abfrage direkt aus
+        this.executeQueryInternal(query, successCallback, errorCallback);
+    }
+
+    private isSystemQuery(query: string): boolean {
+        // Systemabfragen, die keinen Reload auslösen sollen
+        const systemQueries = [
+            'PRAGMA',
+            'SELECT name, sql, type FROM sqlite_master',
+            'PRAGMA table_info(',
+            'PRAGMA foreign_key_list(',
+            'select count(*) from'
+        ];
+        
+        const upperQuery = query.trim().toUpperCase();
+        return systemQueries.some(pattern => upperQuery.startsWith(pattern.toUpperCase()));
+    }
+
+    private executeQueryInternal(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
         let id = this.queryId++;
 
         this.querySuccessCallbacksMap.set(id, successCallback);

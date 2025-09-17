@@ -143,6 +143,8 @@ export class MainEmbedded implements MainBase {
     initialTemplateDump: Uint8Array;
     initialStatements: string[];
 
+    fetcher: DatabaseFetcher;
+
     constructor($div: JQuery<HTMLElement>, private scriptList: JOScript[]) {
 
         this.readConfig($div);
@@ -155,13 +157,9 @@ export class MainEmbedded implements MainBase {
         this.databaseExplorer = new DatabaseExplorer(this, this.$dbTreeDiv);
         this.databaseTool = new DatabaseTool(this);
         if (this.config.databaseURL != null) {
-            new DatabaseFetcher(this).load(this.config.databaseURL).then((loadableDb) => {
-                this.initialTemplateDump = loadableDb.binDump;
-                this.initialStatements = loadableDb.statements == null ? [] : loadableDb.statements;
-                this.initDatabase();
-            }).catch((error: string) => {
-                alert('Fehler beim Landen der Datenbank: ' + error)
-            })
+            console.log("Loading database from URL " + this.config.databaseURL);
+            this.fetcher = new DatabaseFetcher(this);
+            this.forceReload();
         } else {
             this.initDatabase();
         }
@@ -169,19 +167,18 @@ export class MainEmbedded implements MainBase {
         this.semicolonAngel = new SemicolonAngel(this);
 
         if (this.config.enableFileAccess) {
-            console.log("File access enabled.");
             //@ts-ignore
             window.sql_ide_access = new OnlineIDEAccessImpl();
             OnlineIDEAccessImpl.registerIDE(this);
         }
         else {
-            console.log("File access disabled.");
         }
 
 
     }
 
     initDatabase() {
+        console.log("initDatabase");
         this.resetDatabase(() => {
             this.initScripts();
 
@@ -870,6 +867,16 @@ export class MainEmbedded implements MainBase {
         return this.semicolonAngel;
     }
 
+    public forceReload(): void {
+        console.log("DatabaseFetcher.forceReload");
+        if(this.fetcher == null || this.config.databaseURL == null) return;
+        this.fetcher.load(this.config.databaseURL).then((loadableDb) => {
+            this.initialTemplateDump = loadableDb.binDump;
+            this.initDatabase();
+        }).catch((error: string) => {
+            alert('Fehler beim Landen der Datenbank: ' + error)
+        });
+    }
 }
 
 

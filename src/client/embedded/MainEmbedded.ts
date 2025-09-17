@@ -877,6 +877,26 @@ export class MainEmbedded implements MainBase {
             alert('Fehler beim Landen der Datenbank: ' + error)
         });
     }
+
+    public async forceReloadAsync(): Promise<void> {
+        console.log("DatabaseFetcher.forceReloadAsync - reloading database from " + this.config.databaseURL);
+        if(this.fetcher == null || this.config.databaseURL == null) return Promise.resolve();
+        
+        try {
+            const loadableDb = await this.fetcher.load(this.config.databaseURL);
+            this.initialTemplateDump = loadableDb.binDump;
+            
+            return new Promise<void>((resolve) => {
+                this.resetDatabase(() => {
+                    console.log("Database reloaded successfully");
+                    resolve();
+                });
+            });
+        } catch (error) {
+            console.error('Error reloading database:', error);
+            throw error;
+        }
+    }
 }
 
 

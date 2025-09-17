@@ -194,7 +194,35 @@ export class DatabaseTool {
     }
 
     executeQuery(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
+        // Check if we're in embedded context and need to reload database before each query
+        if (this.main.isEmbedded()) {
+            // Cast to MainEmbedded to access forceReloadAsync method
+            const mainEmbedded = this.main as any;
+            if (mainEmbedded.forceReloadAsync && typeof mainEmbedded.forceReloadAsync === 'function' && mainEmbedded.config?.databaseURL) {
+                console.log("Reloading database before executing query: " + query);
+                
+                // Reload database first, then execute query
+                mainEmbedded.forceReloadAsync()
+                    .then(() => {
+                        console.log("Database reload complete, executing query: " + query);
+                        this.executeQueryInternal(query, successCallback, errorCallback);
+                    })
+                    .catch((error: any) => {
+                        console.error("Error during database reload:", error);
+                        // If reload fails, execute error callback
+                        if (errorCallback) {
+                            errorCallback("Database reload failed: " + error);
+                        }
+                    });
+                return;
+            }
+        }
+        
+        // Normal execution for non-embedded contexts or when forceReloadAsync is not available
+        this.executeQueryInternal(query, successCallback, errorCallback);
+    }
 
+    private executeQueryInternal(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
         let id = this.queryId++;
 
         this.querySuccessCallbacksMap.set(id, successCallback);
@@ -206,7 +234,6 @@ export class DatabaseTool {
             sql: query,
             params: {}
         });
-
     }
 
     export(successCallback: (buffer: Uint8Array) => void, errorCallback: QueryErrorCallback) {

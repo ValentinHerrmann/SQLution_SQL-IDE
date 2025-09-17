@@ -9,6 +9,7 @@ interface IDEFileAccess {
 interface SingleIDEAccess {
     getFiles(): IDEFileAccess[];
     forceReload(): void;
+    forceReloadAsync(): Promise<void>;
 }
 
 interface OnlineIDEAccess {
@@ -43,6 +44,10 @@ export class SingleIDEAccessImpl implements SingleIDEAccess {
 
     forceReload(): void {
         this.ide.forceReload();
+    }
+
+    forceReloadAsync(): Promise<void> {
+        return this.ide.forceReloadAsync();
     }
 
     getDatabase() {

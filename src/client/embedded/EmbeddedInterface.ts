@@ -8,6 +8,7 @@ interface IDEFileAccess {
 
 interface SingleIDEAccess {
     getFiles(): IDEFileAccess[];
+    forceReload(): void;
 }
 
 interface OnlineIDEAccess {
@@ -40,13 +41,21 @@ export class SingleIDEAccessImpl implements SingleIDEAccess {
         return this.ide.getCurrentWorkspace().moduleStore.getModules(false).map(file => new IDEFileAccessImpl(file));        
     }
 
+    forceReload(): void {
+        this.ide.forceReload();
+    }
+
     getDatabase() {
     const dbTool = this.ide.getDatabaseTool();
 
     return new Promise((resolve, reject) => {
         dbTool.export(
             (db) => {
-                const blob = new Blob([db.buffer], { type: 'application/octet-stream' });
+                const buffer = db.buffer instanceof ArrayBuffer ? db.buffer : new ArrayBuffer(db.buffer.byteLength);
+                if (!(db.buffer instanceof ArrayBuffer)) {
+                    new Uint8Array(buffer).set(new Uint8Array(db.buffer));
+                }
+                const blob = new Blob([new Uint8Array(buffer)], { type: 'application/octet-stream' });
                 resolve(blob);
             },
             (error) => {

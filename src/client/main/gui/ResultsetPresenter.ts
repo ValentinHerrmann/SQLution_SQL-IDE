@@ -631,7 +631,6 @@ export class ResultsetPresenter {
             });
         }
 
-        // let sqlStatement = module.getSQLStatementAtPosition(monacoEditor.getPosition());
 
         return statements;
 

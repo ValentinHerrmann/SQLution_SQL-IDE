@@ -157,7 +157,6 @@ export class MainEmbedded implements MainBase {
         this.databaseExplorer = new DatabaseExplorer(this, this.$dbTreeDiv);
         this.databaseTool = new DatabaseTool(this);
         if (this.config.databaseURL != null) {
-            console.log("Loading database from URL " + this.config.databaseURL);
             this.fetcher = new DatabaseFetcher(this);
             this.forceReload();
         } else {

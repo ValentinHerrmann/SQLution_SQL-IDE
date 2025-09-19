@@ -194,6 +194,7 @@ export class DatabaseTool {
     }
 
     executeQuery(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
+        
         // Check if we're in embedded context and need to reload database before each query
         if (this.main.isEmbedded()) {
             // Cast to MainEmbedded to access forceReloadAsync method
@@ -234,6 +235,7 @@ export class DatabaseTool {
             sql: query,
             params: {}
         });
+
     }
 
     export(successCallback: (buffer: Uint8Array) => void, errorCallback: QueryErrorCallback) {

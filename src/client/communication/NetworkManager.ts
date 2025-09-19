@@ -337,19 +337,13 @@ export class NetworkManager {
     }
 
     fetchDatabase(workspace: Workspace, callback: (error: string) => void) {
-
-        console.log("NetworkManager: fetchDatabase for workspace " + workspace.name);
         let cacheManager: CacheManager = new CacheManager();
 
         let request: GetDatabaseRequest = {
             workspaceId: workspace.id
         }
 
-        console.log('fetchDatabase - workspace.id=' + workspace.id);
-
         ajax("getDatabase", request, (response: getDatabaseResponse) => {
-            console.log(' ajax -getDatabase');
-            console.log(response);
             if (response.success) {
 
                 workspace.database = WDatabase.fromDatabaseData(response.database, response.version)

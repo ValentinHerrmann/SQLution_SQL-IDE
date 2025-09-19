@@ -7,7 +7,6 @@ export class EmbeddedIndexedDB {
     }
 
     public open(successCallback: () => void) {
-        console.log("IndexedDB.open()");
 
         if (window.indexedDB) {
 

@@ -16,21 +16,11 @@ export class DatabaseFetcher {
     }
 
     public async load(url: string): Promise<LoadableDatabase> {
-        console.log("DatabaseFetcher.load");
-        console.log("Loading database from URL " + url);
         let urlWithoutProtocol = url.replace("https://", "")
             .replace("http://", "").toLocaleLowerCase();
 
         let urlLowerCase = urlWithoutProtocol.toLocaleLowerCase();
 
-        /*let templateDump: Uint8Array = await this.fetchTemplateFromCache(urlWithoutProtocol);
-        if (templateDump != null) {
-            if (DatabaseTool.getDumpType(templateDump) == "binaryCompressed") {
-                // @ts-ignore
-                templateDump = pako.inflate(templateDump);
-            }
-            return { binDump: templateDump }
-        }*/
 
         let db: LoadableDatabase;
         if (urlLowerCase.endsWith(".sqlite")) {
@@ -39,7 +29,6 @@ export class DatabaseFetcher {
             db = await this.loadMySql(url, urlWithoutProtocol);
         }
 
-        //this.saveDatabaseToCache(urlWithoutProtocol, db.binDump);
 
         return db;
 

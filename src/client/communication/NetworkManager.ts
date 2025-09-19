@@ -94,7 +94,6 @@ export class NetworkManager {
                 if (!m.file.saved) {
                     m.file.text = m.getProgramTextFromMonacoModel();
                     fdList.push(m.getFileData(ws));
-                    // console.log("Save file " + m.file.name);
                     m.file.saved = true;
                 }
             }
@@ -337,19 +336,13 @@ export class NetworkManager {
     }
 
     fetchDatabase(workspace: Workspace, callback: (error: string) => void) {
-
-        console.log("NetworkManager: fetchDatabase for workspace " + workspace.name);
         let cacheManager: CacheManager = new CacheManager();
 
         let request: GetDatabaseRequest = {
             workspaceId: workspace.id
         }
 
-        console.log('fetchDatabase - workspace.id=' + workspace.id);
-
         ajax("getDatabase", request, (response: getDatabaseResponse) => {
-            console.log(' ajax -getDatabase');
-            console.log(response);
             if (response.success) {
 
                 workspace.database = WDatabase.fromDatabaseData(response.database, response.version)

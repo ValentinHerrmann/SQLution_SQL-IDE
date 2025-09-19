@@ -144,7 +144,6 @@ export function createDb1(SQL, buffer) {
     });
 
     db.create_function("concat", function (arg) {
-        console.log("Hier1");
         if (arguments == null) return "";
         let erg = "";
         for(let i = 0; i < arguments.length; i++){

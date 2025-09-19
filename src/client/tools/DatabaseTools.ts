@@ -82,8 +82,6 @@ export class DatabaseTool {
 
         let t = performance.now();
 
-        // console.log("Starting worker...");
-
         let url: string = "worker/sqljs-worker.js"
         if(this.main.isEmbedded()){
             //@ts-ignore
@@ -102,10 +100,7 @@ export class DatabaseTool {
         let errors: string[] = [];
 
         this.worker.onmessage = () => {
-            // console.log("Database opened (" + (performance.now() - t)/1000 + " s)");
             that.worker.onmessage = event => {
-
-                // console.log(event.data);
 
                 let id = event.data.id;
                 if (event.data.error == null) {
@@ -119,15 +114,8 @@ export class DatabaseTool {
                         queryErrorCallback(event.data.error);
                     }
                 }
-
-                // if(event.data.buffer){
-                //     console.log(event.data.buffer);
-                // }
-
-
                 this.queryErrorCallbackMap.delete(id);
                 this.querySuccessCallbacksMap.delete(id);
-
             };
 
             if(queries == null) queries = [];
@@ -144,43 +132,18 @@ export class DatabaseTool {
                         execQuery();
                     }, (error) => {
                         errors.push("Error while setting up database: " + error + ", query: " + query);
-                        console.log({"error": "Error while setting up database: " + error, "query": query});
-                        console.log()
                         execQuery();
                     })
                 } else {
                     if (callbackAfterInitializing != null) callbackAfterInitializing(errors);
                     that.retrieveDatabaseStructure(() => {
-                        // console.log("Database structure retrieved (" + (performance.now() - t)/1000 + " s)");
                         if (callbackAfterRetrievingStructure) callbackAfterRetrievingStructure();
                         this.main.getWaitOverlay().hide();
 
                     });
                 }
             }
-
             execQuery();
-
-            // that.executeQuery(sql, (result) => {
-            //     // console.log("Template written (" + (performance.now() - t)/1000 + " s)");
-
-            //     if (callbackAfterInitializing != null) callbackAfterInitializing();
-            //     that.retrieveDatabaseStructure(() => {
-            //         // console.log("Database structure retrieved (" + (performance.now() - t)/1000 + " s)");
-            //         if (callbackAfterRetrievingStructure) callbackAfterRetrievingStructure();
-            //         jQuery('#bitteWarten').css('display', 'none');
-
-            //     });
-            //     // that.executeQuery("select * from test", (results: QueryResult[]) => {console.log(results)}, (error) => {console.log("Error:" + error)});
-            // },
-            //     (error) => {
-            //         console.log("Error while setting up database: " + error);
-            //     });
-
-            // that.worker.postMessage({
-            //     action: "export"
-            // })
-
         };
 
         this.worker.onerror = (e) => {
@@ -205,8 +168,6 @@ export class DatabaseTool {
             
             // Prüfe ob eine databaseURL konfiguriert ist und es keine Systemabfrage ist
             if (mainEmbedded.config?.databaseURL != null && mainEmbedded.fetcher != null && !this.isSystemQuery(query)) {
-                console.log("Auto-reloading database before executing query:", query);
-                
                 this.isReloading = true; // Verhindere weitere Reloads
                 
                 // Lade Datenbank neu und führe dann die Abfrage aus
@@ -307,9 +268,6 @@ export class DatabaseTool {
 
             if (sql1 != "") {
                 this.executeQuery(sql1, (result1) => {
-                    // console.log("DB structure: ");
-                    // console.log(result1);
-
                     that.databaseStructure = that.parseDatabaseStructure(result, result1, types)
 
                     callback(that.databaseStructure);
@@ -425,9 +383,6 @@ export class DatabaseTool {
                 }
             }
         }
-
-        // console.log(this.databaseStructure);
-
         return this.databaseStructure;
 
     }

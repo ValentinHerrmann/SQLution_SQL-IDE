@@ -16,8 +16,6 @@ export class DatabaseFetcher {
     }
 
     public async load(url: string): Promise<LoadableDatabase> {
-        console.log("DatabaseFetcher.load");
-        console.log("Loading database from URL " + url);
         let urlWithoutProtocol = url.replace("https://", "")
             .replace("http://", "").toLocaleLowerCase();
 
@@ -114,7 +112,6 @@ export class DatabaseFetcher {
 
     cacheAvailable(): boolean {
         return false;
-        return 'caches' in self;
     }
 
 }

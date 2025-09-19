@@ -90,19 +90,10 @@ export class Editor {
 
 
         this.editor = monaco.editor.create($element[0], {
-            // value: [
-            //     'function x() {',
-            //     '\tconsole.log("Hello world!");',
-            //     '}'
-            // ].join('\n'),
-            // language: 'myJava',
             language: 'vscSQL',
             lightbulb: {
                 enabled: true
             },
-            // gotoLocation: {
-            //     multipleReferences: "gotoAndPeek"
-            // },
             lineDecorationsWidth: 0,
             peekWidgetDefaultFocus: "tree",
             fixedOverflowWidgets: true,
@@ -129,10 +120,6 @@ export class Editor {
                 // snippetsPreventQuickSuggestions: false
             },
             parameterHints: { enabled: true, cycle: true },
-            // //@ts-ignore
-            // contribInfo: {
-            //     suggestSelection: 'recentlyUsedByPrefix',
-            // },
 
             mouseWheelZoom: this.isEmbedded,
 
@@ -273,8 +260,6 @@ export class Editor {
 
     lastTime: number = 0;
     setFontSize(fontSizePx: number) {
-
-        // console.log("Set font size: " + fontSizePx);
         let time = new Date().getTime();
         if (time - this.lastTime < 150) return;
         this.lastTime = time;
@@ -391,8 +376,6 @@ export class Editor {
                 return null;
             }
         });
-
-        //console.log(this.editor.getSupportedActions());
     }
 
     onMarginMouseDown(lineNumber: number) {

@@ -157,7 +157,6 @@ export class MainEmbedded implements MainBase {
         this.databaseExplorer = new DatabaseExplorer(this, this.$dbTreeDiv);
         this.databaseTool = new DatabaseTool(this);
         if (this.config.databaseURL != null) {
-            console.log("Loading database from URL " + this.config.databaseURL);
             this.fetcher = new DatabaseFetcher(this);
             this.forceReload();
         } else {
@@ -178,7 +177,6 @@ export class MainEmbedded implements MainBase {
     }
 
     initDatabase() {
-        console.log("initDatabase");
         this.resetDatabase(() => {
             this.initScripts();
 
@@ -319,8 +317,6 @@ export class MainEmbedded implements MainBase {
 
                             that.fileExplorer?.addModule(module);
                             that.$codeResetButton.fadeIn(1000);
-
-                            // console.log("Retrieving script " + scriptId);
                         }
                         countDown--;
                         if (countDown == 0) {
@@ -361,7 +357,6 @@ export class MainEmbedded implements MainBase {
                 let scriptId = this.config.id + module.file.name;
                 this.indexedDB.writeScript(scriptId, module.getProgramTextFromMonacoModel());
                 module.file.saved = true;
-                // console.log("Saving script " + scriptId);
             }
 
             this.indexedDB.writeScript(this.config.id, JSON.stringify(scriptList));
@@ -868,7 +863,6 @@ export class MainEmbedded implements MainBase {
     }
 
     public forceReload(): void {
-        console.log("DatabaseFetcher.forceReload");
         if(this.fetcher == null || this.config.databaseURL == null) return;
         this.fetcher.load(this.config.databaseURL).then((loadableDb) => {
             this.initialTemplateDump = loadableDb.binDump;

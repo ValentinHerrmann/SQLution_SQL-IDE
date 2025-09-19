@@ -23,7 +23,6 @@ export class CacheManager {
 
     cacheAvailable(): boolean {
         return false;
-        return 'caches' in self;
     }
 
     getCache(callback: (cache: Cache) => void) {

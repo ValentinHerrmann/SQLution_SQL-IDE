@@ -51,6 +51,7 @@ export class SingleIDEAccessImpl implements SingleIDEAccess {
     return new Promise((resolve, reject) => {
         dbTool.export(
             (db) => {
+                // @ts-ignore
                 const buffer = db.buffer instanceof ArrayBuffer ? db.buffer : new ArrayBuffer(db.buffer.byteLength);
                 if (!(db.buffer instanceof ArrayBuffer)) {
                     new Uint8Array(buffer).set(new Uint8Array(db.buffer));

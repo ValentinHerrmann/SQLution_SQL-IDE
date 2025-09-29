@@ -1,14 +1,11 @@
+import * as monaco from 'monaco-editor';
 import { ajax } from "../communication/AjaxHelper.js";
 import { getUserDisplayName, LoginRequest, LoginResponse, LogoutRequest, UserData } from "../communication/Data.js";
-import { Main } from "./Main.js";
-import { Helper } from "./gui/Helper.js";
-import { userInfo } from "os";
-import { UserMenu } from "./gui/UserMenu.js";
-import { escapeHtml } from "../tools/StringTools.js";
 import { PushClientManager } from "../communication/pushclient/PushClientManager.js";
 import { AutoLogout } from "./AutoLogout.js";
-import { setCookie } from "../tools/HttpTools.js";
-
+import { Main } from "./Main.js";
+import { UserMenu } from "./gui/UserMenu.js";
+import jQuery from "jquery";
 
 export class Login {
 
@@ -116,7 +113,8 @@ export class Login {
                     // window.location.href = 'index.html';
 
                     if (this.loggedInWithVidis) {
-                        window.location.assign("https://aai-test.vidis.schule/auth/realms/vidis/protocol/openid-connect/logout?ID_TOKEN_HINT=" + this.main.user.vidis_sub + "&post_logout_redirect_uri=https%3A%2F%2Fwww.sql-ide.de");
+                        // window.location.assign("https://aai-test.vidis.schule/auth/realms/vidis/protocol/openid-connect/logout?ID_TOKEN_HINT=" + this.main.user.vidis_sub + "&post_logout_redirect_uri=https%3A%2F%2Fwww.sql-ide.de");
+                        window.location.assign("https://aai.vidis.schule/auth/realms/vidis/protocol/openid-connect/logout?ID_TOKEN_HINT=" + this.main.user.vidis_sub + "&post_logout_redirect_uri=https%3A%2F%2Fwww.sql-ide.de");
                     } else {
                         jQuery('#login').show();
                         this.main.waitOverlay.hide();

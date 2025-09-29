@@ -8,6 +8,8 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist
+dist-embedded
 dist-ssr
 *.local
 
@@ -26,4 +28,4 @@ dist-ssr
 /upload_csg.cmd
 /package-lock.json
 
-dist/
+/intern/

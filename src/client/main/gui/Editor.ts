@@ -1,15 +1,15 @@
 import { Module } from "../../compiler/parser/Module.js";
 import { Main } from "../Main.js";
 import { MyCompletionItemProvider } from "./MyCompletionItemProvider.js";
-import { defineMyJava } from "./MyJava.js";
 import { MySignatureHelpProvider } from "./MySignatureHelpProvider.js";
 import { MyHoverProvider } from "./MyHoverProvider.js";
 import { MyCodeActionProvider } from "./MyCodeActionProvider.js";
 import { MyReferenceProvider } from "./MyReferenceProvider.js";
-import { Workspace } from "../../workspace/Workspace.js";
 import { defineVscSQL } from "./VSCSql.js";
 import { MainBase } from "../MainBase.js";
 import { Helper } from "./Helper.js";
+import jQuery from "jquery";
+import * as monaco from 'monaco-editor'
 
 
 export class Editor {
@@ -92,7 +92,7 @@ export class Editor {
         this.editor = monaco.editor.create($element[0], {
             language: 'vscSQL',
             lightbulb: {
-                enabled: true
+                enabled: monaco.editor.ShowLightbulbIconMode.On
             },
             lineDecorationsWidth: 0,
             peekWidgetDefaultFocus: "tree",
@@ -107,7 +107,7 @@ export class Editor {
             // selectionHighlight: false,
             automaticLayout: true,
             scrollBeyondLastLine: false,
-            occurrencesHighlight: false,
+            occurrencesHighlight: "off",
             autoIndent: "full",
             dragAndDrop: true,
             formatOnType: true,
@@ -191,9 +191,8 @@ export class Editor {
         monaco.languages.registerSignatureHelpProvider('vscSQL', new MySignatureHelpProvider(this.main));
 
         this.editor.onMouseDown((e: monaco.editor.IEditorMouseEvent) => {
-            const data = e.target.detail;
             if (e.target.type !== monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN &&
-                e.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS || data.isAfterLines) {
+                e.target.type !== monaco.editor.MouseTargetType.GUTTER_LINE_NUMBERS) {
                 return;
             }
             that.onMarginMouseDown(e.target.position.lineNumber);
@@ -328,7 +327,7 @@ export class Editor {
 
             // An optional array of keybindings for the action.
             keybindings: [
-                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_K],
+                monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyK],
 
             // A precondition for this action.
             precondition: null,

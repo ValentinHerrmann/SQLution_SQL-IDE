@@ -15,7 +15,8 @@ export default {
         entryFileNames: _assetInfo => {
           return 'sql-ide-embedded.js'; // im Hauptverzeichnis
         },
-        assetFileNames: assetInfo => assetInfo.name?.endsWith('css') ? 'sql-ide-embedded.css' : 'assets/[name]-[hash][extname]',
+        assetFileNames: assetInfo => assetInfo.name?.endsWith('css') ? 'sql-ide-embedded.css' : 'assets/[name][extname]',
+        chunkFileNames: 'assets/js/[name].js',
         manualChunks: (id: string, { getModuleInfo, getModuleIds }) => {
           if (id.endsWith('.css')) {
             return 'css';

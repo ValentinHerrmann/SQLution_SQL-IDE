@@ -11,6 +11,14 @@ export default {
         // 'sqljs-worker': './src/client/sqljs-worker/sqljsWorker.ts'
       },
       output: {
+        entryFileNames: assetInfo => {
+          if(assetInfo.name.indexOf('worker') >= 0){
+            return 'worker/[name].js';
+          }
+          return '[name].js';
+        },
+        assetFileNames: assetInfo => assetInfo.name?.endsWith('css') ? '[name][extname]' : 'assets/[name][extname]',
+        chunkFileNames: 'assets/js/[name].js',
         manualChunks: (id: string, { getModuleInfo, getModuleIds }) => {
           if (id.includes('node_modules')) {
             let moduleName: string = id.toString().split('node_modules/')[1].split('/')[0].toString().replace("@", "");
@@ -22,19 +30,7 @@ export default {
 
           return undefined;
         },
-      },
-
-      // output: {
-      //   entryFileNames: assetInfo => {
-      //     if(assetInfo.name.indexOf('worker') >= 0){
-      //       return 'worker/[name].js';
-      //     }
-      //     return '[name]-[hash].js';
-      //   },
-      //   assetFileNames: assetInfo => assetInfo.name.endsWith('css') ? '[name]-[hash][extname]' : 'assets/[name]-[hash][extname]',
-      //   chunkFileNames: 'assets/js/[name]-[hash].js',
-      //   manualChunks: {}
-      // }
+      }
     },
     outDir: './dist',
     // chunkSizeWarningLimit: 4912

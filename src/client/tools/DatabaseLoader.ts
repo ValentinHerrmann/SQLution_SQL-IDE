@@ -106,7 +106,7 @@ export class DatabaseFetcher {
         if (!this.cacheAvailable()) return;
 
         let cache = await caches.open('my-cache');
-
+        // @ts-ignore
         cache.put(databaseIdentifier, new Response(templateDump));
     }
 

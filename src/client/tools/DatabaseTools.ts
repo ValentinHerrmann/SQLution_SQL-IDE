@@ -160,7 +160,6 @@ export class DatabaseTool {
     }
 
     executeQuery(query: string, successCallback: QuerySuccessCallback, errorCallback: QueryErrorCallback) {
-
         // Automatisches Reload der Datenbank vor jeder Abfrage bei embedded Instanzen
         // Aber nur wenn nicht bereits ein Reload läuft und es keine interne Struktur-Abfrage ist
         if (this.main.isEmbedded() && !this.isReloading) {
@@ -179,6 +178,7 @@ export class DatabaseTool {
                         this.isReloading = false; // Reload abgeschlossen
                         // Nach erfolgreichem Reload, führe die ursprüngliche Abfrage aus
                         this.executeQueryInternal(query, successCallback, errorCallback);
+                        this.saveSQLutionDatabase();
                     }, () => {
                         // Structure retrieval completed
                     });
@@ -193,6 +193,39 @@ export class DatabaseTool {
 
         // Standard-Verhalten: Führe Abfrage direkt aus
         this.executeQueryInternal(query, successCallback, errorCallback);
+
+    }
+
+    private saveSQLutionDatabase() {
+        // Automatisches Speichern der Datenbank bei embedded Instanzen
+        if (!this.main.isEmbedded()) return;
+        const mainEmbedded = this.main as any; // Type assertion für MainEmbedded
+        if (mainEmbedded.config?.databaseURL == null || mainEmbedded.fetcher == null) return;
+        this.export(
+            (db) => {
+                // @ts-ignore
+                const buffer = db.buffer instanceof ArrayBuffer ? db.buffer : new ArrayBuffer(db.buffer.byteLength);
+                if (!(db.buffer instanceof ArrayBuffer)) {
+                    new Uint8Array(buffer).set(new Uint8Array(db.buffer));
+                }
+                const blob = new Blob([new Uint8Array(buffer)], { type: 'application/octet-stream' });
+                
+                // @ts-ignore
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                fetch("/api/upload_db/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/octet-stream",  "X-CSRFToken": csrftoken },
+                    body: blob
+                }).then((response) => {
+                    if (!response.ok) {
+                        console.error(response)
+                    }
+                })
+            },
+            (error) => {
+                console.error("Export failed: " + error);
+            }
+        );
     }
 
     private isSystemQuery(query: string): boolean {

@@ -43,7 +43,8 @@ export class DatabaseImportExport {
                 return;
             }
             if (!filename.endsWith(".sqLite")) filename = filename + ".sqLite";
-            downloadFile(new Blob([<ArrayBuffer>db.buffer]), filename, true);
+            // @ts-ignore
+            downloadFile(new Blob([db.buffer]), filename, true);
         }, () => {});
     }
 
